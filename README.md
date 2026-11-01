@@ -70,6 +70,18 @@ claude mcp list          # hevy should show as connected
 
 Inside Claude Code, `/mcp` shows the server and its tools. Try: *"What did I train this week?"* or *"Build me a 4-day upper/lower routine in a new folder called Winter Block."*
 
+### Troubleshooting: `Executable not found in $PATH: "node"`
+
+If Node comes from nvm (or another version manager), Claude Code may not see it, because nvm only sets up `PATH` in interactive shells. Register the server with the absolute path to Node instead of bare `node`:
+
+```bash
+claude mcp add hevy --scope user \
+  --env HEVY_API_KEY=your-key \
+  -- "$(which node)" "$(pwd)/dist/index.js"
+```
+
+Re-run this after switching Node versions, since the path changes. MCP servers connect when a session starts, so open a new Claude Code session afterwards.
+
 ### Claude Desktop
 
 Add the same block to `claude_desktop_config.json` (Settings → Developer → Edit Config), with the real key in `env` since Desktop does not expand shell variables, then restart Claude Desktop.
