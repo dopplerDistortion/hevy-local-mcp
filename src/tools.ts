@@ -288,13 +288,16 @@ export function registerTools(server: McpServer, client: HevyClient): void {
           if (custom_only && !t.is_custom) return false;
           return true;
         });
-        // Prefer exact and prefix title matches.
+        // Prefer exact, then prefix title matches.
         const q = query ? normalize(query) : "";
         const rank = (t: ExerciseTemplate) => {
           const title = normalize(t.title ?? "");
           return title === q ? 0 : title.startsWith(q) ? 1 : 2;
         };
-        matches.sort((a, b) => rank(a) - rank(b) || a.title.localeCompare(b.title));
+        // Within a rank, shorter titles first, so "Bench Press (Barbell)" beats "Bench Press - Close Grip (Barbell)".
+        matches.sort(
+          (a, b) => rank(a) - rank(b) || a.title.length - b.title.length || a.title.localeCompare(b.title),
+        );
         return { total_matches: matches.length, exercise_templates: matches.slice(0, limit) };
       }),
   );

@@ -12,8 +12,8 @@ let client;
 
 const templates = Array.from({ length: 150 }, (_, i) => ({
   id: `T${i}`,
-  title: i === 42 ? "Bench Press (Barbell)" : i === 43 ? "Incline Bench Press (Dumbbell)" : `Exercise ${i}`,
-  primary_muscle_group: i === 42 || i === 43 ? "chest" : "other",
+  title: i === 42 ? "Bench Press (Barbell)" : i === 43 ? "Incline Bench Press (Dumbbell)" : i === 44 ? "Bench Press - Close Grip (Barbell)" : `Exercise ${i}`,
+  primary_muscle_group: i >= 42 && i <= 44 ? "chest" : "other",
   secondary_muscle_groups: [],
   equipment: i === 43 ? "dumbbell" : "barbell",
   is_custom: false,
@@ -82,8 +82,8 @@ test("sends api-key header", async () => {
 
 test("search_exercise_templates pages through the library and ranks matches", async () => {
   const res = json(await client.callTool({ name: "search_exercise_templates", arguments: { query: "bench press" } }));
-  assert.equal(res.total_matches, 2);
-  assert.equal(res.exercise_templates[0].id, "T42");
+  assert.equal(res.total_matches, 3);
+  assert.deepEqual(res.exercise_templates.map((t) => t.id), ["T42", "T44", "T43"]);
   const dumbbell = json(await client.callTool({ name: "search_exercise_templates", arguments: { query: "bench", equipment: "dumbbell" } }));
   assert.deepEqual(dumbbell.exercise_templates.map((t) => t.id), ["T43"]);
   // second search served from cache: 2 pages fetched once
